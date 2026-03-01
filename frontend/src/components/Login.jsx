@@ -22,6 +22,7 @@ export default function Login() {
       }
       const resp = await apiLogin(email, password);
       const { access_token, refresh_token } = resp.data;
+      localStorage.setItem('access_token', access_token);
       const meResp = await getMe();
       login(access_token, refresh_token, meResp.data);
       navigate('/');
