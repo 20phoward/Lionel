@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, teams
+from routers import auth, teams, users
 
 app = FastAPI(title="Lionel", description="Issue Management Platform")
 
@@ -14,6 +14,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(teams.router)
+app.include_router(users.router)
 
 
 @app.get("/api/health")
