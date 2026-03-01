@@ -47,6 +47,7 @@ export const fetchTeam = (id) => api.get(`/teams/${id}`);
 
 // Users
 export const fetchUsers = () => api.get('/users');
+export const updateUser = (id, data) => api.put(`/users/${id}`, data);
 
 // Issues
 export const fetchIssues = (params) => api.get('/issues', { params });

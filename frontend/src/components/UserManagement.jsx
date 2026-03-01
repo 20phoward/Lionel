@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { fetchUsers, register, fetchTeams } from '../api/client';
+import { fetchUsers, register, fetchTeams, updateUser } from '../api/client';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -8,6 +9,7 @@ export default function UserManagement() {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '', name: '', role: 'member', team_id: '' });
   const [error, setError] = useState('');
+  const { user: currentUser } = useAuth();
 
   const loadData = () => {
     Promise.all([fetchUsers(), fetchTeams()])
@@ -33,6 +35,15 @@ export default function UserManagement() {
       loadData();
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to create user');
+    }
+  };
+
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      await updateUser(userId, { role: newRole });
+      loadData();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Failed to update role');
     }
   };
 
@@ -97,9 +108,22 @@ export default function UserManagement() {
                 <td className="px-6 py-4 font-medium">{u.name}</td>
                 <td className="px-6 py-4 text-sm text-gray-500">{u.email}</td>
                 <td className="px-6 py-4">
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${roleColor[u.role]}`}>
-                    {u.role.replace('_', ' ')}
-                  </span>
+                  {u.id === currentUser?.id ? (
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${roleColor[u.role]}`}>
+                      {u.role.replace('_', ' ')} (you)
+                    </span>
+                  ) : (
+                    <select
+                      value={u.role}
+                      onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                      className={`px-2 py-1 rounded text-xs font-medium border-0 cursor-pointer ${roleColor[u.role]}`}
+                    >
+                      <option value="admin">admin</option>
+                      <option value="team_lead">team lead</option>
+                      <option value="member">member</option>
+                      <option value="external">external</option>
+                    </select>
+                  )}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">{new Date(u.created_at).toLocaleDateString()}</td>
               </tr>

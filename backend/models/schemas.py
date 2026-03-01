@@ -42,6 +42,11 @@ class UserResponse(BaseModel):
         from_attributes = True
 
 
+class UserUpdate(BaseModel):
+    role: Optional[str] = None
+    team_id: Optional[int] = None
+
+
 # --- Teams ---
 
 class TeamCreate(BaseModel):
